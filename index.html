@@ -6,11 +6,24 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
     <script>
+    let dateToday = new Date();
+    let dateTomorrow = new Date(dateToday.getTime() + (24 * 60 * 60 * 1000));
+    let today = dateToday.getFullYear()+'/'+(dateToday.getMonth()+1)+'/'+dateToday.getDate();
+    let tomorrow = dateTomorrow.getFullYear()+'/'+(dateTomorrow.getMonth()+1)+'/'+dateTomorrow.getDate() ;
+    let sqlQuery = `SELECT * FROM TxAccountCreates WHERE timestamp >= ${today} AND timestamp < ${tomorrow} ORDER BY CONVERT(DATE, timestamp) DESC`
+
+    console.log( sqlQuery )
+    let template = `<h1>HAPPY STEEM-VERARY on ${ today}</h1>`;
+    $('body').append(template);
+
+
     $.post('https://sql.steemhelpers.com/api', {
-      query : "SELECT * FROM TxAccountCreates WHERE timestamp >= '2017/01/01' AND timestamp < '2017/01/02' ORDER BY CONVERT(DATE, timestamp) DESC"
+      query : sqlQuery
       }, (res) => {
       console.log(res)
     })
+
+
     </script>
   </body>
 </html>
