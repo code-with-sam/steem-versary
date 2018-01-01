@@ -19,23 +19,25 @@
     let template = `<h1>HAPPY STEEM-VERARY on ${ today}</h1>`;
     $('body').append(template);
 
-    getData()
-      .then(data => processUsers(data), data => console.log('error', data))
+    getGlobalProps()
+    getAniversaryData()
+      .then(data => processNamesToAccounts(data), data => console.log('error', data))
+      .then(data => proccessAccountInfo(data))
       .then(data => {
         console.log('done', data)
+        $('body').append(`<h2>${data.length} Aniversarys </h2>`);
       })
 
 
 
-    function processUsers(data){
+    function processNamesToAccounts(data){
       let userNames = data.rows.map(user => user.new_account_name)
-      console.log(userNames)
       return new Promise((resolve, reject) => {
         var accountsDetails = getAccounts(userNames)
         resolve(accountsDetails)
       })
     }
-    function getData(){
+    function getAniversaryData(){
       return new Promise((resolve, reject) => {
         $.post('https://sql.steemhelpers.com/api', {
           query : sqlQuery
@@ -47,6 +49,77 @@
     function getAccounts(accountNames){
       return steem.api.getAccounts(accountNames, (err, response) => response )
     };
+
+    function proccessAccountInfo(accounts){
+      let accountsData = [];
+      let processAllData = new Promise((resolve, reject) => {
+
+      accounts.forEach( user => {
+        // store meta Data
+        let jsonData = user.json_metadata ? JSON.parse(user.json_metadata).profile : {}
+
+        // steem power calc
+        let vestingShares = user.vesting_shares;
+        let delegatedVestingShares = user.delegated_vesting_shares;
+        let receivedVestingShares = user.received_vesting_shares;
+        let steemPower = steem.formatter.vestToSteem(vestingShares, totalVestingShares, totalVestingFundSteem);
+        let delegatedSteemPower = steem.formatter.vestToSteem((receivedVestingShares.split(' ')[0])+' VESTS', totalVestingShares, totalVestingFundSteem);
+        let outgoingSteemPower = steem.formatter.vestToSteem((receivedVestingShares.split(' ')[0]-delegatedVestingShares.split(' ')[0])+' VESTS', totalVestingShares, totalVestingFundSteem) - delegatedSteemPower;
+
+        // vote power calc
+        let lastVoteTime = (new Date - new Date(user.last_vote_time + "Z")) / 1000;
+        let votePower = user.voting_power += (10000 * lastVoteTime / 432000);
+        votePower = Math.min(votePower / 100, 100).toFixed(2);
+
+        accountsData.push({
+          name: user.name,
+          image: jsonData.profile_image ? 'https://steemitimages.com/2048x512/' + jsonData.profile_image : '',
+          rep: steem.formatter.reputation(user.reputation),
+          effectiveSp: parseInt(steemPower  + delegatedSteemPower - -outgoingSteemPower).toLocaleString(),
+          sp: parseInt(steemPower).toLocaleString(),
+          delegatedSpIn: parseInt(delegatedSteemPower).toLocaleString(),
+          delegatedSpOut: parseInt(-outgoingSteemPower).toLocaleString(),
+          vp: votePower,
+          steem: user.balance.substring(0, user.balance.length - 5),
+          sbd: user.sbd_balance.substring(0, user.sbd_balance.length - 3),
+          numOfPosts: user.post_count,
+          followerCount: '',
+          followingCount: '',
+          usdValue: ''
+        });
+      });
+
+      let followerAndFollowingCount = accountsData.map( user => steem.api.getFollowCount(user.name))
+
+      Promise.all(followerAndFollowingCount)
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+              accountsData[i].followerCount = data[i].follower_count
+              accountsData[i].followingCount = data[i].following_count
+            }
+        })
+
+      let usdValues = accounts.map( user => steem.formatter.estimateAccountValue(user) )
+
+      Promise.all(usdValues)
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+              accountsData[i].usdValue = parseInt(data[i]).toLocaleString()
+            }
+            resolve(accountsData);
+        })
+      });
+
+      return processAllData;
+    }
+
+    function getGlobalProps(){
+      return steem.api.getDynamicGlobalProperties((err, result) => {
+        totalVestingShares = result.total_vesting_shares;
+        totalVestingFundSteem = result.total_vesting_fund_steem;
+      })
+    }
+
     </script>
   </body>
 </html>
