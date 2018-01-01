@@ -7,12 +7,15 @@
 
     <script>
     let dateToday = new Date();
-    let dateTomorrow = new Date(dateToday.getTime() + (24 * 60 * 60 * 1000));
-    let today = dateToday.getFullYear()+'/'+(dateToday.getMonth()+1)+'/'+dateToday.getDate();
-    let tomorrow = dateTomorrow.getFullYear()+'/'+(dateTomorrow.getMonth()+1)+'/'+dateTomorrow.getDate() ;
-    let sqlQuery = `SELECT * FROM TxAccountCreates WHERE timestamp >= ${today} AND timestamp < ${tomorrow} ORDER BY CONVERT(DATE, timestamp) DESC`
+    let dateLastYear = new Date(dateToday.getTime() - (365 * 24 * 60 * 60 * 1000));
+    let dateLastYearTomorrow = new Date(dateToday.getTime() + (24 * 60 * 60 * 1000) - (365 * 24 * 60 * 60 * 1000));
+    let today = dateLastYear.getFullYear()+'/'+(dateLastYear.getMonth()+1)+'/'+dateLastYear.getDate();
+    let tomorrow = dateLastYearTomorrow.getFullYear()+'/'+(dateLastYearTomorrow.getMonth()+1)+'/'+dateLastYearTomorrow.getDate() ;
+    let sqlQuery = `SELECT * FROM TxAccountCreates WHERE timestamp >= '${today}' AND timestamp < '${tomorrow}' ORDER BY CONVERT(DATE, timestamp) DESC`
 
+    console.log( today, tomorrow )
     console.log( sqlQuery )
+
     let template = `<h1>HAPPY STEEM-VERARY on ${ today}</h1>`;
     $('body').append(template);
 
