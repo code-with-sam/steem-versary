@@ -2,7 +2,7 @@
   <head>
   </head>
   <body>
-
+    <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
     <script>
@@ -19,14 +19,34 @@
     let template = `<h1>HAPPY STEEM-VERARY on ${ today}</h1>`;
     $('body').append(template);
 
+    getData()
+      .then(data => processUsers(data), data => console.log('error', data))
+      .then(data => {
+        console.log('done', data)
+      })
 
-    $.post('https://sql.steemhelpers.com/api', {
-      query : sqlQuery
-      }, (res) => {
-      console.log(res)
-    })
 
 
+    function processUsers(data){
+      let userNames = data.rows.map(user => user.new_account_name)
+      console.log(userNames)
+      return new Promise((resolve, reject) => {
+        var accountsDetails = getAccounts(userNames)
+        resolve(accountsDetails)
+      })
+    }
+    function getData(){
+      return new Promise((resolve, reject) => {
+        $.post('https://sql.steemhelpers.com/api', {
+          query : sqlQuery
+        }, (res) => {
+          if (res.error === null) { resolve(res) } else { reject(res) }
+        });
+      });
+    }
+    function getAccounts(accountNames){
+      return steem.api.getAccounts(accountNames, (err, response) => response )
+    };
     </script>
   </body>
 </html>
