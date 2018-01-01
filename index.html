@@ -1,0 +1,16 @@
+<html>
+  <head>
+  </head>
+  <body>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    <script>
+    $.post('https://sql.steemhelpers.com/api', {
+      query : "SELECT * FROM TxAccountCreates WHERE timestamp >= '2017/01/01' AND timestamp < '2017/01/02' ORDER BY CONVERT(DATE, timestamp) DESC"
+      }, (res) => {
+      console.log(res)
+    })
+    </script>
+  </body>
+</html>
