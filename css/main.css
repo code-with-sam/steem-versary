@@ -7,6 +7,11 @@ body {
   border-bottom: dotted 1px #000;
 }
 
+.grid-item {
+  margin: 20px 0;
+  /*border: solid 2px #777;*/
+}
+
 img {
   border: dotted 1px #999;
   padding: 3px;
