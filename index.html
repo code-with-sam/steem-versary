@@ -1,7 +1,32 @@
 <html>
-  <head>
-  </head>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Steemversary</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="css/main.css"> -->
+</head>
   <body>
+    <div class="jumbotron">
+        <div class="container">
+          <h1 class="display-3">Welcome To Steemversary</h1>
+            <h5>Check out all of the steeminas birthdays</h5>
+        </div>
+      </div>
+
+      <div class="container">
+      <!-- Example row of columns -->
+      <div class="row grid">
+
+      </div>
+
+      <hr>
+      <footer>Created by <a href="http://steemit.com/@sambillingham">Sam Billingham</a></footer>
+    </div> <!-- /container -->
+
     <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
@@ -12,6 +37,7 @@
     let today = dateLastYear.getFullYear()+'/'+(dateLastYear.getMonth()+1)+'/'+dateLastYear.getDate();
     let tomorrow = dateLastYearTomorrow.getFullYear()+'/'+(dateLastYearTomorrow.getMonth()+1)+'/'+dateLastYearTomorrow.getDate() ;
     let sqlQuery = `SELECT * FROM TxAccountCreates WHERE timestamp >= '${today}' AND timestamp < '${tomorrow}' ORDER BY CONVERT(DATE, timestamp) DESC`
+    // let sqlQuery = `SELECT * FROM TxAccountCreates WHERE timestamp >= '2017/12/25' AND timestamp < '2017/12/26' ORDER BY CONVERT(DATE, timestamp) DESC`
 
     console.log( today, tomorrow )
     console.log( sqlQuery )
@@ -21,19 +47,84 @@
 
     getGlobalProps()
     getAniversaryData()
-      .then(data => processNamesToAccounts(data), data => console.log('error', data))
-      .then(data => proccessAccountInfo(data))
+      .then(data => {
+        console.log(data);
+        return processNamesToAccounts(data);
+
+       }, data => console.log('error', data))
+      .then(data => {
+        console.log(data);
+        return proccessAccountInfo(data)
+      })
       .then(data => {
         console.log('done', data)
+        displayAccounts(data)
+
         $('body').append(`<h2>${data.length} Aniversarys </h2>`);
       })
 
+      // setTimeout(function(){
+      //   console.log("WEND END END")
+      //   $('.vote-count').each(function(){
+      //
+      //     let user = $(this);
+      //
+      //     let vote = user.data('vote');
+      //     console.log(vote)
+      //
+      //     if(vote == 0){
+      //       user.remove()
+      //     }
+      //
+      //   })
+      // }, 7000)
+
+
+      function displayAccounts(accounts){
+        let $grid = $('.grid');
+        $('.grid').empty();
+
+        accounts.forEach(user => {
+          user.image = user.image ? user.image : 'http://placehold.it/50x50'
+          let template =
+            `<div class="col-lg-3 col-md-4 col-sm-6" data-name="@${user.name}">
+            <a href="https://steemit.com/@${user.name}" class="user-link"><img src="${user.image}" class="rounded-circle" height="80px" width="80px"></a>
+            <li><a href="https://steemit.com/@${user.name}" class="user-value user-name user-link">${user.name}</a> <span class="badge badge-secondary">${user.rep}</span></li>
+            <li>EFFECTIVE SP: <span class="user-value">${ user.effectiveSp }</span></li>
+            <li>STEAM POWER: <span class="user-value">${user.sp} <br>(+ ${user.delegatedSpIn} - ${user.delegatedSpOut})</span></li>
+
+            <li>
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped" role="progressbar" style="width: ${user.vp}%;" aria-valuenow="${user.vp}" aria-valuemin="0" aria-valuemax="100">Vote Power - ${user.vp}% </div>
+                </div>
+            </li>
+
+            <li>STEEM BALANCE: <span class="user-value">${user.steem}</span></li>
+            <li>SBD Balance: <span class="user-value">${user.sbd}</span></li>
+            <li>POSTS: <span class="user-value">${user.numOfPosts}</span></li>
+
+            <li>Followers: <span class="user-value">${user.followerCount}</span></li>
+            <li>Following: <span class="user-value">${user.followingCount}</span></li>
+
+            <li><span class="user-value">💵 $${user.usdValue}</span></li>
+
+            <li><span class="user-value vote-count" data-vote="${user.lifeTimeVotecount}"> ${user.lifeTimeVotecount}</span></li>
+            <li><span class="user-value"> ${user.lastVotetime}</span></li>
+            <li><span class="user-value"> ${user.lastPostTime}</span></li>
+
+            </div>`;
+            $grid.append(template);
+        })
+
+      }
 
 
     function processNamesToAccounts(data){
+
       let userNames = data.rows.map(user => user.new_account_name)
       return new Promise((resolve, reject) => {
         var accountsDetails = getAccounts(userNames)
+
         resolve(accountsDetails)
       })
     }
@@ -42,6 +133,7 @@
         $.post('https://sql.steemhelpers.com/api', {
           query : sqlQuery
         }, (res) => {
+          console.log(res);
           if (res.error === null) { resolve(res) } else { reject(res) }
         });
       });
@@ -56,7 +148,14 @@
 
       accounts.forEach( user => {
         // store meta Data
-        let jsonData = user.json_metadata ? JSON.parse(user.json_metadata).profile : {}
+        //   let jsonData =  { profile_image : 'http://placehold.it/40x40' }
+        //   let userImage;
+        // if (user.json_metadata != undefined) {
+        //   userImage = 'http://placehold.it/40x40';
+        // } else {
+        //   userImage = jsonData.profile_image ? 'https://steemitimages.com/2048x512/' + jsonData.profile_image : '';
+        // }
+        jsonData = user.json_metadata ? JSON.parse(user.json_metadata).profile : {}
 
         // steem power calc
         let vestingShares = user.vesting_shares;
@@ -85,7 +184,10 @@
           numOfPosts: user.post_count,
           followerCount: '',
           followingCount: '',
-          usdValue: ''
+          usdValue: '',
+          lastPostTime: user.last_root_post,
+          lastVotetime: user.last_vote_time,
+          lifeTimeVotecount: user.lifetime_vote_count
         });
       });
 
