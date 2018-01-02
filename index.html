@@ -2,43 +2,34 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Steemversary</title>
+    <title>Steemversary - by @sambillingham</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
     <link rel="stylesheet" href="css/main.css">
 </head>
   <body>
     <div class="jumbotron">
         <div class="container">
           <h1 class="display-3">🎉🍾 Steemversary 🎉🍾</h1>
-            <h5>Rewarding Active users on their Aniversary</h5>
-            on this day one year ago 0000 people created accounts
-            on this day two years ago 0000 peopel made accounts
+            <h5 class="sub-title">Reward active users on their aniversary</h5>
         </div>
       </div>
-
-      <div class="container">
-      <!-- Example row of columns -->
-      <div class="row grid">
-
-      </div>
-
-      <hr>
+    <main class="container">
+      <div class="row grid"></div>
+      <div class="load-area"></div>
+      <hr class="footer-hr">
       <footer>Created by <a href="http://steemit.com/@sambillingham">Sam Billingham</a></footer>
-    </div> <!-- /container -->
+    </main> <!-- /container -->
 
+    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
     <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
     <script>
-
-    console.log (moment('2018-01-01T18:34:06').fromNow() )
-    // 2018-01-01T18:34:06
-    // yyyy-MM-dd'T'HH:mm:ss
-
 
     let dateToday = new Date();
     let today = new Date(dateToday.getTime() );
@@ -64,8 +55,8 @@
 
 
 
-    let template = `<h1>HAPPY STEEM-VERARY on ${ today}</h1>`;
-    $('.display-3').append(template);
+    let template = `🎉🍾 Steemversary ${ todayFriendly} 🎉🍾 `;
+    $('.display-3').text(template);
 
     getGlobalProps()
     getAniversaryData()
@@ -73,63 +64,77 @@
       .then(data => proccessAccountInfo(data))
       .then(data => sortAccountsByDate(data))
       .then(data => {
-        console.log('done', data)
+        let inactiveCount = countInactive(data);
         displayAccounts(data)
-
-        $('body').append(`<h2>${data.length} Aniversarys </h2>`);
+        displayInactiveMessage(inactiveCount)
+        $('.display-3').parent().append(`<h4>On this day one year ago ${data.length} people created Steem Accounts 🙌 </h4>`);
+        $('.display-3').parent().append(`<h4>${data.length - inactiveCount} of those have been active in the last 28 days 🙈</h4>`);
       })
+      let progressTimer;
 
-      // hide accounts not active in two months
-      // allow sort by reputation
-      // fix images missing/404s
-      // one/two/three year aniversaries
-
+      $(document).ready( () => {
+        NProgress.configure({ parent: '.load-area' });
+        NProgress.start();
+        progressTimer = setInterval( () => {
+          NProgress.inc(0.25)
+        }, 700)
+      })
 
       function displayAccounts(accounts){
         let $grid = $('.grid');
         $('.grid').empty();
 
         accounts.forEach(user => {
-          user.image = user.image ? user.image : 'http://placehold.it/50x50'
-
+          user.image = user.image ? user.image : 'img/default-user.jpg'
 
           var relativeLasPostTime =  user.lastPostTime == '1970-01-01T00:00:00' ? 'Never' : moment(user.lastPostTime).fromNow();
           let template =
-            `<div class="grid-item col-lg-3 col-md-4 col-sm-6" data-name="@${user.name}">
-            <a href="https://steemit.com/@${user.name}" class="user-link"><img src="${user.image}" class="rounded-circle" height="80px" width="80px"></a>
-            <li><a href="https://steemit.com/@${user.name}" class="user-value user-name user-link">${user.name}</a> <span class="badge badge-secondary">${user.rep}</span></li>
-
-
-            <li>POSTS: <span class="user-value">${user.numOfPosts}</span></li>
-
-            <li>Followers: <span class="user-value">${user.followerCount}</span></li>
-            <li>Following: <span class="user-value">${user.followingCount}</span></li>
-
-            <li><span class="user-value">💵 $${user.usdValue}</span></li>
-
-
-            <li>Active:<span class="user-value"> ${relativeLasPostTime}</span></li>
-
+            `<div class="grid-item col-lg-3 col-md-4 col-sm-6 active-${user.isActive}" data-name="@${user.name}" data-active="${user.isActive}">
+              <a href="https://steemit.com/@${user.name}" class="user-link"><img src="${user.image}" onerror="this.src='img/default-user.jpg'" class="rounded-circle" height="80px" width="80px"></a>
+              <li><a href="https://steemit.com/@${user.name}" class="user-value user-name user-link">${user.name}</a> <span class="badge badge-secondary">${user.rep}</span></li>
+              <li>EFFECTIVE SP: <span class="user-value">${user.effectiveSp}</span></li>
+              <li>POSTS: <span class="user-value">${user.numOfPosts}</span></li>
+              <li>Followers: <span class="user-value">${user.followerCount}</span></li>
+              <li>Following: <span class="user-value">${user.followingCount}</span></li>
+              <li>Active:<span class="user-value"> <span class="badge badge-pill badge-dark">${relativeLasPostTime}</span></span></li>
             </div>`;
+
+            clearInterval(progressTimer)
+            NProgress.done(true);
             $grid.append(template);
         })
 
       }
 
-      //
-      // <li>
-      // <div class="progress">
-      // <div class="progress-bar progress-bar-striped" role="progressbar" style="width: ${user.vp}%;" aria-valuenow="${user.vp}" aria-valuemin="0" aria-valuemax="100">Vote Power - ${user.vp}% </div>
-      // </div>
-      // </li>
+      $('.grid').on('click', '.hide-inactive', function(){
+          $('.active-false').hide()
+          $(this).hide()
+          $('.show-inactive').show()
 
-      // <li>STEAM POWER: <span class="user-value">${user.sp} <br>(+ ${user.delegatedSpIn} - ${user.delegatedSpOut})</span></li>
-      // <li>EFFECTIVE SP: <span class="user-value">${ user.effectiveSp }</span></li>
-      // <li>STEEM BALANCE: <span class="user-value">${user.steem}</span></li>
-      // <li>SBD Balance: <span class="user-value">${user.sbd}</span></li>
-      // <li><span class="user-value vote-count" data-vote="${user.lifeTimeVotecount}"> ${user.lifeTimeVotecount}</span></li>
-      // <li><span class="user-value"> ${user.lastPostTime}</span></li>
+      });
 
+    $('.grid').on('click', '.show-inactive', function(){
+        $('.active-false').show()
+        $(this).hide()
+        $('.hide-inactive').show()
+
+    });
+
+    function displayInactiveMessage(inactiveCount) {
+      let template =
+      `<div class="grid-item col-lg-3 col-md-4 col-sm-6" >
+          <h3>${inactiveCount} In-Active accounts hidden</h3>
+          <button class="btn btn-small btn-dark show-inactive">Show In-Active Accounts</button>
+          <button class="btn btn-small btn-dark hide-inactive">Hide In-Active Accounts</button>
+      </div>`;
+      $('.grid').append(template);
+    }
+    function countInactive(array) {
+      var inactiveAccounts = array.filter( user => {
+        return user.isActive === false;
+      })
+      return inactiveAccounts.length;
+    }
     function processNamesToAccounts(data){
       console.log('NAMES TO ACCOUNTS DATA: ', data)
       let userNames = data.map(user => user.new_account_name)
@@ -140,38 +145,37 @@
       })
     }
     function getAniversaryData(){
-        return new Promise((resolve, reject) => {
-            let queryOne = new Promise((resolve, reject) => {
+        // return new Promise((resolve, reject) => {
+            return new Promise((resolve, reject) => {
               $.post('https://sql.steemhelpers.com/api', {
                 query : sqlQuery
-              }, (res) => resolve(res));
+              }, (res) => resolve(res.rows));
             });
-            let queryTwo = new Promise((resolve, reject) => {
-              $.post('https://sql.steemhelpers.com/api', {
-                query : sqlQueryTwoYears
-              }, (res) => resolve(res));
-            });
-            let queries = [queryOne,queryTwo];
+            // let queryTwo = new Promise((resolve, reject) => {
+            //   $.post('https://sql.steemhelpers.com/api', {
+            //     query : sqlQueryTwoYears
+            //   }, (res) => resolve(res));
+            // });
+            // let queries = [queryOne,queryTwo];
 
-             Promise.all(queries)
-              .then(data => {
-                console.log('query 1', data[0])
-                console.log('query 2', data[1])
-                  let allUsers = data[0].rows.concat(data[1].rows)
-                  resolve(allUsers);
-              });
-        });
+            // ----> disable double request until June 2018 <-------
+
+            //  Promise.all(queries)
+            //   .then(data => {
+            //     console.log('query 1', data[0])
+            //     console.log('query 2', data[1])
+            //       let allUsers = data[0].rows.concat(data[1].rows)
+            //       resolve(allUsers);
+            //   });
+        // });
     }
 
     function sortAccountsByDate(data){
       return new Promise((resolve, reject) => {
-
-      let info = data.sort(function(a,b){
-        // Turn your strings into dates, and then subtract them
-        // to get a value that is either negative, positive, or zero.
-        return new Date(b.lastPostTime) - new Date(a.lastPostTime);
-      });
-      resolve(info)
+          let info = data.sort(function(a,b){
+              return new Date(b.lastPostTime) - new Date(a.lastPostTime);
+          });
+          resolve(info)
       });
 
     }
@@ -183,15 +187,17 @@
       let accountsData = [];
       let processAllData = new Promise((resolve, reject) => {
 
+        let now = moment().valueOf();
+        let checkTime = moment("2018-01-02T00:40:54").valueOf();
+        let twentyEightDaysInSeconds = ( 28 * 24 * 60 * 60 * 1000)
+
+      if ( checkTime >= now - twentyEightDaysInSeconds ) {
+        console.log('YES ACTIVE')
+      } else {
+        console.log('NO IN ACTIVE')
+
+      }
       accounts.forEach( user => {
-        // store meta Data
-        //   let jsonData =  { profile_image : 'http://placehold.it/40x40' }
-        //   let userImage;
-        // if (user.json_metadata != undefined) {
-        //   userImage = 'http://placehold.it/40x40';
-        // } else {
-        //   userImage = jsonData.profile_image ? 'https://steemitimages.com/2048x512/' + jsonData.profile_image : '';
-        // }
         jsonData = user.json_metadata ? JSON.parse(user.json_metadata).profile : {}
 
         // steem power calc
@@ -202,29 +208,18 @@
         let delegatedSteemPower = steem.formatter.vestToSteem((receivedVestingShares.split(' ')[0])+' VESTS', totalVestingShares, totalVestingFundSteem);
         let outgoingSteemPower = steem.formatter.vestToSteem((receivedVestingShares.split(' ')[0]-delegatedVestingShares.split(' ')[0])+' VESTS', totalVestingShares, totalVestingFundSteem) - delegatedSteemPower;
 
-        // vote power calc
-        let lastVoteTime = (new Date - new Date(user.last_vote_time + "Z")) / 1000;
-        let votePower = user.voting_power += (10000 * lastVoteTime / 432000);
-        votePower = Math.min(votePower / 100, 100).toFixed(2);
+        let isActive = ( moment(user.last_root_post).valueOf() >= now - twentyEightDaysInSeconds ) ? true : false
 
         accountsData.push({
           name: user.name,
-          // image: jsonData.profile_image ? 'https://steemitimages.com/2048x512/' + jsonData.profile_image : '',
+          image: jsonData.profile_image ? 'https://steemitimages.com/2048x512/' + jsonData.profile_image : '',
           rep: steem.formatter.reputation(user.reputation),
           effectiveSp: parseInt(steemPower  + delegatedSteemPower - -outgoingSteemPower).toLocaleString(),
-          sp: parseInt(steemPower).toLocaleString(),
-          delegatedSpIn: parseInt(delegatedSteemPower).toLocaleString(),
-          delegatedSpOut: parseInt(-outgoingSteemPower).toLocaleString(),
-          vp: votePower,
-          steem: user.balance.substring(0, user.balance.length - 5),
-          sbd: user.sbd_balance.substring(0, user.sbd_balance.length - 3),
           numOfPosts: user.post_count,
           followerCount: '',
           followingCount: '',
-          usdValue: '',
           lastPostTime: user.last_root_post,
-          lastVotetime: user.last_vote_time,
-          lifeTimeVotecount: user.lifetime_vote_count
+          isActive: isActive
         });
       });
 
@@ -236,17 +231,9 @@
               accountsData[i].followerCount = data[i].follower_count
               accountsData[i].followingCount = data[i].following_count
             }
-        })
-
-      let usdValues = accounts.map( user => steem.formatter.estimateAccountValue(user) )
-
-      Promise.all(usdValues)
-        .then(data => {
-            for (let i = 0; i < data.length; i++) {
-              accountsData[i].usdValue = parseInt(data[i]).toLocaleString()
-            }
             resolve(accountsData);
         })
+
       });
 
       return processAllData;
