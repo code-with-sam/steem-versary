@@ -165,32 +165,24 @@ function proccessAccountInfo(accounts){
 
   }
   accounts.forEach( user => {
-    let jsonData = {};
-    let profileImage = 'img/default-user.jpg'
+    let profileImage = 'img/default-user.jpg';
 
-    if (typeof user.json_metadata === "undefined"){
-      console.log('the property is not available...'); // print into console
+    if (user.json_metadata == '' || user === undefined || user.json_metadata == 'undefined') {
+      user.json_metadata = {
+         profile_image : 'img/default-user.jpg'
+      }
     } else {
-        console.log(user.json_metadata)
-        // jsonData = JSON.parse(user.json_metadata).profile
-        console.log(jsonData)
-          // if (typeof jsonData.profile_image === "undefined"){
-          // } else {
-            // profileImage = 'https://steemitimages.com/2048x512/' + jsonData.profile_image;
-          // }
+      user.json_metadata = user.json_metadata ? JSON.parse(user.json_metadata).profile : {};
     }
-    // if (user.json )
-    // if (user.json_metadata === undefined || user.json_metadata == {}){
-    //   let jsonData = {
-    //     profile_image : 'img/default-user.jpg'
-    //   }
-    //   console.log(user.json_metadata);
-    //
-    //
-    //   // jsonData.profile_image ? 'https://steemitimages.com/2048x512/' + jsonData.profile_image : '';
-    //   let profileImage = 'img/default-user.jpg' ;
-    //   // jsonData.profile_image ? 'https://steemitimages.com/2048x512/' + jsonData.profile_image : '';
-    // }
+
+    if (user.json_metadata == 'undefined' || user.json_metadata === undefined){
+      user.json_metadata = {
+         profile_image : 'img/default-user.jpg'
+      }
+    }
+    profileImage = user.json_metadata.profile_image ? 'https://steemitimages.com/2048x512/' + user.json_metadata.profile_image : '';
+
+
     // steem power calc
     let vestingShares = user.vesting_shares;
     let delegatedVestingShares = user.delegated_vesting_shares;
