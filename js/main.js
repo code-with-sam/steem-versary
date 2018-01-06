@@ -243,7 +243,7 @@ botFeed([querySteemSql(botVotes),querySteemSql(botComments)])
 
 function applyFeed(feed){
   feed.forEach( (item, i, arr) => {
-    let title = item.title ? item.title : 'placeholder'
+    let title = item.title ? item.title : unSlug(item.permlink)
     let template =
     `<li>
     ${item.timestamp} - ${item.action} - ${item.author} - <a href="https:steemit.com/@${item.author}/${item.permlink}">${title}</a>
@@ -279,4 +279,13 @@ function sortFeedByDate(data){
       resolve(feed)
   });
 
+}
+
+function unSlug(slugs) {
+
+	var list = [];
+	slugs.split('-').forEach(function (slug) {
+		list.push(slug.substr(0, 1).toUpperCase() + slug.substr(1));
+	})
+	return list.join(' ');
 }
