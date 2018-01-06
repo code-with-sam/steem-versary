@@ -12,12 +12,14 @@ body {
    color: #fff;
    border-radius: 0;
    position: relative;
+   padding: 4rem 2rem 5rem;
 }
 nav {
-  text-align: right;
+  text-align: center;;
   position: absolute;
   bottom: 20px;
-  right: 20px;
+  left: 0;
+  width: 100%;
 }
 
 h2 {
@@ -51,6 +53,7 @@ h1.display-3 {
 .grid-item {
   margin: 20px 0;
   /*border: solid 2px #777;*/
+  text-align: center;
 }
 
 .active-false {
@@ -72,11 +75,15 @@ button {
   margin-top: 20px;
   font-size: 14px;
 }
+.user-title {
+  margin-top: 15px;
+}
 .user-value {
   font-weight: 700;
 }
 .user-name {
-  font-size: 18px;
+  font-size: 16px;
+  position: relative;
 }
 a.user-name {
   color: #000;
@@ -84,6 +91,16 @@ a.user-name {
 }
 a.user-link:hover {
   color: #797979;
+}
+.user-rep {
+  position: absolute;;
+  left: -50%;
+  top: 70px;
+  transform: translateX(-50%);
+  height: 22px;
+  width: 22px;
+  line-height: 1.8;
+  border-radius: 50%;
 }
 .hide-inactive {
   display: none;
@@ -119,4 +136,14 @@ footer a:hover {
 }
 .activity-title {
   font-style: italic;
+}
+
+
+@media (min-width: 1200px) {
+  .col-xl-15 {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 20%;
+    flex: 0 0 20%;
+    max-width: 20%;
+  }
 }

@@ -57,9 +57,9 @@ $(document).ready( () => {
 
       var relativeLasPostTime =  user.lastPostTime == '1970-01-01T00:00:00' ? 'Never' : moment(user.lastPostTime).fromNow();
       let template =
-        `<div class="grid-item col-lg-3 col-md-4 col-sm-6 active-${user.isActive}" data-name="@${user.name}" data-active="${user.isActive}">
+        `<div class="grid-item col-xl-15 col-lg-3 col-md-4 col-sm-6 active-${user.isActive}" data-name="@${user.name}" data-active="${user.isActive}">
           <a href="https://steemit.com/@${user.name}" class="user-link"><img src="${user.image}" onerror="this.src='img/default-user.jpg'" class="rounded-circle" height="80px" width="80px"></a>
-          <li><a href="https://steemit.com/@${user.name}" class="user-value user-name user-link">${user.name}</a> <span class="badge badge-secondary">${user.rep}</span></li>
+          <li class="user-title"><a href="https://steemit.com/@${user.name}" class="user-value user-name user-link">${user.name}</a> <span class="badge badge-secondary user-rep">${user.rep}</span></li>
           <li>EFFECTIVE SP: <span class="user-value">${user.effectiveSp}</span></li>
           <li>POSTS: <span class="user-value">${user.numOfPosts}</span></li>
           <li>Followers: <span class="user-value">${user.followerCount}</span></li>
@@ -90,7 +90,7 @@ $('.grid').on('click', '.show-inactive', function(){
 
 function displayInactiveMessage(inactiveCount) {
   let template =
-  `<div class="grid-item col-lg-3 col-md-4 col-sm-6" >
+  `<div class="grid-item col-xl-15 col-lg-3 col-md-4 col-sm-6" >
       <h3>${inactiveCount} In-Active accounts hidden</h3>
       <button class="btn btn-small btn-dark show-inactive">Show In-Active Accounts</button>
       <button class="btn btn-small btn-dark hide-inactive">Hide In-Active Accounts</button>
