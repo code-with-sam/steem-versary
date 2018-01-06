@@ -244,9 +244,10 @@ botFeed([querySteemSql(botVotes),querySteemSql(botComments)])
 function applyFeed(feed){
   feed.forEach( (item, i, arr) => {
     let title = item.title ? item.title : unSlug(item.permlink)
+    let emoji = item.action == 'comment' ? '📝' : '👍'
     let template =
     `<li>
-    ${ moment(item.timestamp).fromNow()} - ${item.action} - ${item.author} - <a href="https:steemit.com/@${item.author}/${item.permlink}">${title}</a>
+    ${emoji} - ${ moment(item.timestamp).fromNow()}- <span class="activity-title">${item.action}</span> - <a href="https:steemit.com/@${item.author}">${item.author}</a> - <a href="https:steemit.com/@${item.author}/${item.permlink}">${title}</a>
     </li>`
     console.log(template)
 

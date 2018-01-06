@@ -97,3 +97,10 @@ footer a:hover {
 .bot-report  {
   padding: 40px;
 }
+
+.li-title {
+  font-weight: 700;
+}
+.activity-title {
+  font-style: italic;
+}
