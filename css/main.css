@@ -93,13 +93,13 @@ a.user-link:hover {
   color: #797979;
 }
 .user-rep {
-  position: absolute;;
-  left: -50%;
-  top: 70px;
-  transform: translateX(-50%);
-  height: 22px;
-  width: 22px;
-  line-height: 1.8;
+  position: absolute;
+  right: 50%;
+  top: 67px;
+  transform: translateX(50%);
+  height: 27px;
+  width: 27px;
+  line-height: 2.2;
   border-radius: 50%;
 }
 .hide-inactive {

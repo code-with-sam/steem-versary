@@ -33,6 +33,7 @@ getAniversaryData()
   .then(data => {
     let inactiveCount = countInactive(data);
     displayAccounts(data)
+    // displayBadges(data) // disable for now
     displayInactiveMessage(inactiveCount)
     $('.display-3').parent().append(`<h4>On this day one year ago ${data.length} people created Steem Accounts 🙌 </h4>`);
     $('.display-3').parent().append(`<h4>${data.length - inactiveCount} of those have been active in the last 28 days 🙈</h4>`);
@@ -57,14 +58,15 @@ $(document).ready( () => {
 
       var relativeLasPostTime =  user.lastPostTime == '1970-01-01T00:00:00' ? 'Never' : moment(user.lastPostTime).fromNow();
       let template =
-        `<div class="grid-item col-xl-15 col-lg-3 col-md-4 col-sm-6 active-${user.isActive}" data-name="@${user.name}" data-active="${user.isActive}">
+        `<div class="grid-item col-xl-15 col-lg-3 col-md-4 col-sm-6 active-${user.isActive} user-${user.name}" data-name="@${user.name}" data-active="${user.isActive}">
           <a href="https://steemit.com/@${user.name}" class="user-link"><img src="${user.image}" onerror="this.src='img/default-user.jpg'" class="rounded-circle" height="80px" width="80px"></a>
-          <li class="user-title"><a href="https://steemit.com/@${user.name}" class="user-value user-name user-link">${user.name}</a> <span class="badge badge-secondary user-rep">${user.rep}</span></li>
-          <li>EFFECTIVE SP: <span class="user-value">${user.effectiveSp}</span></li>
+          <li class="user-title"><a href="https://steemit.com/@${user.name}" class="user-value user-name user-link">${user.name}</a> <span class="badge badge-dark user-rep">${user.rep}</span></li>
+          <li>EFFECTIVE SP: <span class="user-value">${(user.effectiveSp).toLocaleString()}</span></li>
           <li>POSTS: <span class="user-value">${user.numOfPosts}</span></li>
           <li>Followers: <span class="user-value">${user.followerCount}</span></li>
           <li>Following: <span class="user-value">${user.followingCount}</span></li>
           <li>Active:<span class="user-value"> <span class="badge badge-pill badge-dark">${relativeLasPostTime}</span></span></li>
+
         </div>`;
 
         clearInterval(progressTimer)
@@ -87,6 +89,36 @@ $('.grid').on('click', '.show-inactive', function(){
     $('.hide-inactive').show()
 
 });
+function displayBadges(data){
+  let badge = calcBadges(data)
+  $('.user-'+badge.mostSp.name).append(
+    '<li><span class="user-value"> <span class="badge badge-pill badge-primary">💪 Most Steem Power</span></span></li>'
+  )
+  $('.user-'+badge.mostPosts.name).append(
+    '<li><span class="user-value"> <span class="badge badge-pill badge-success">📝 Most Posts</span></span></li>'
+  )
+  $('.user-'+badge.mostFollowers.name).append(
+    '<li><span class="user-value"> <span class="badge badge-pill badge-info">👨‍👩‍👧‍👦 Most Followers</span></span></li>'
+  )
+  $('.user-'+badge.highestRep.name).append(
+    '<li><span class="user-value"> <span class="badge badge-pill badge-danger">👏 Highest Reputation</span></span></li>'
+  )
+}
+
+function calcBadges(data){
+  return {
+    mostPosts : findMax(data, 'numOfPosts'),
+    mostSp :  findMax(data, 'effectiveSp'),
+    mostFollowers : findMax(data, 'followerCount'),
+    highestRep : findMax(data, 'rep')
+  }
+}
+function findMax(data,prop){
+  const max = data.reduce(function(prev, current) {
+      return (prev[prop] > current[prop]) ? prev : current
+  }) //returns object
+  return max
+}
 
 function displayInactiveMessage(inactiveCount) {
   let template =
@@ -199,7 +231,7 @@ function proccessAccountInfo(accounts){
       name: user.name,
       image: profileImage,
       rep: steem.formatter.reputation(user.reputation),
-      effectiveSp: parseInt(steemPower  + delegatedSteemPower - -outgoingSteemPower).toLocaleString(),
+      effectiveSp: parseInt(steemPower  + delegatedSteemPower - -outgoingSteemPower),
       numOfPosts: user.post_count,
       followerCount: '',
       followingCount: '',
