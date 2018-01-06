@@ -231,13 +231,10 @@ function getGlobalProps(){
 }
 
 /// -------- BOT REPORT
-let botVotes = "SELECT timestamp, author, permlink, weight as Votes FROM TxVotes WHERE voter = 'steemversary' ORDER BY CONVERT(DATE, timestamp) DESC "
-querySteemSql(botVotes)
-  .then(data => console.log(data))
+let botVotes = "SELECT timestamp, author, permlink, weight FROM TxVotes WHERE voter = 'steemversary' ORDER BY CONVERT(DATE, timestamp) DESC "
+let botComments = "SELECT parent_author, parent_permlink, title, url, created as timestamp FROM Comments WHERE author='steemversary' ORDER BY CONVERT(DATE, created) DESC"
 
-let botComments = "SELECT parent_author, parent_permlink, title, url, created FROM Comments WHERE author='steemversary' ORDER BY CONVERT(DATE, created) DESC"
-  querySteemSql(botComments)
-    .then(data => console.log(data))
+
 
 
 function botFeed(sqlQueries){
