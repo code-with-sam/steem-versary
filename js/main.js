@@ -240,6 +240,14 @@ let botComments = "SELECT parent_author, parent_permlink, title, url, created FR
     .then(data => console.log(data))
 
 
+function botFeed(sqlQueries){
+    return new Promise((resolve, reject) => {
+        Promise.all(sqlQueries).then(data => {
+          let botFeed = data[0].concat(data[1]);
+          resolve(botFeed)
+        })
+    });
+}
 
 function querySteemSql(sqlQuery){
   return new Promise((resolve, reject) => {
