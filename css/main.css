@@ -11,6 +11,18 @@ body {
    background: linear-gradient(to right, #4b134f, #c94b4b); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
    color: #fff;
    border-radius: 0;
+   position: relative;
+}
+nav {
+  text-align: right;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+h2 {
+  font-size: 22px;
+  text-transform: uppercase;
 }
 main {
   padding-top: 20px;
@@ -95,9 +107,13 @@ footer a:hover {
 
 
 .bot-report  {
-  padding: 40px;
+  display: none;
+  padding: 40px 0;
 }
 
+.bot-report ul {
+  padding: 0;
+}
 .li-title {
   font-weight: 700;
 }

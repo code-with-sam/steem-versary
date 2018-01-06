@@ -37,15 +37,16 @@ getAniversaryData()
     $('.display-3').parent().append(`<h4>On this day one year ago ${data.length} people created Steem Accounts 🙌 </h4>`);
     $('.display-3').parent().append(`<h4>${data.length - inactiveCount} of those have been active in the last 28 days 🙈</h4>`);
   })
-  let progressTimer;
 
-  $(document).ready( () => {
-    NProgress.configure({ parent: '.load-area' });
-    NProgress.start();
-    progressTimer = setInterval( () => {
-      NProgress.inc(0.25)
-    }, 700)
-  })
+let progressTimer;
+
+$(document).ready( () => {
+  NProgress.configure({ parent: '.load-area' });
+  NProgress.start();
+  progressTimer = setInterval( () => {
+    NProgress.inc(0.25)
+  }, 700)
+})
 
   function displayAccounts(accounts){
     let $grid = $('.grid');
@@ -231,25 +232,56 @@ function getGlobalProps(){
 }
 
 /// -------- BOT REPORT
-let botVotes = "SELECT 'vote' as 'action', timestamp, author, permlink, weight FROM TxVotes WHERE voter = 'steemversary' ORDER BY CONVERT(DATE, timestamp) DESC "
-let botComments = "SELECT 'comment' as 'action', parent_author as author, parent_permlink, root_title as title, permlink, created as timestamp FROM Comments WHERE author='steemversary' ORDER BY CONVERT(DATE, created) DESC"
+let botFeedLoad = false;
 
-botFeed([querySteemSql(botVotes),querySteemSql(botComments)])
-  .then(data => sortFeedByDate(data))
-  .then(data => {
-    console.log(data);
-    applyFeed(data);
-  })
+$('.bot-feed-btn').on('click', (e) => {
+  $(e.currentTarget).addClass('active');
+  $('.user-feed-btn').removeClass('active')
+  $('.bot-report').show()
+  $('.grid').hide()
+  if(botFeedLoad === false){
+    loadBotFeed()
+  }
+})
+$('.user-feed-btn').on('click', (e) => {
+  $(e.currentTarget).addClass('active');
+  $('.bot-feed-btn').removeClass('active')
+  $('.bot-report').hide()
+  $('.grid').show()
+})
+
+function loadBotFeed(){
+  NProgress.configure({ parent: '.load-area' });
+  NProgress.start();
+  progressTimer = setInterval( () => {
+    NProgress.inc(0.25)
+  }, 700)
+
+  let botVotes = "SELECT 'vote' as 'action', timestamp, author, permlink, weight FROM TxVotes WHERE voter = 'steemversary' ORDER BY CONVERT(DATE, timestamp) DESC "
+  let botComments = "SELECT 'comment' as 'action', parent_author as author, parent_permlink, root_title as title, permlink, created as timestamp FROM Comments WHERE author='steemversary' ORDER BY CONVERT(DATE, created) DESC"
+  botFeed([querySteemSql(botVotes),querySteemSql(botComments)])
+    .then(data => sortFeedByDate(data))
+    .then(data => {
+
+      console.log(data);
+      applyFeed(data);
+      NProgress.done(true);
+      botFeedLoad = true;
+    })
+}
 
 function applyFeed(feed){
   feed.forEach( (item, i, arr) => {
     let title = item.title ? item.title : unSlug(item.permlink)
     let emoji = item.action == 'comment' ? '📝' : '👍'
+    console.log(title.length)
+    title = title.length > 30 ? title.substring(0,30) + '...' : title
+    console.log(title.length)
+
     let template =
     `<li>
-    ${emoji} - ${ moment(item.timestamp).fromNow()}- <span class="activity-title">${item.action}</span> - <a href="https:steemit.com/@${item.author}">${item.author}</a> - <a href="https:steemit.com/@${item.author}/${item.permlink}">${title}</a>
+    ${emoji} - ${ moment(item.timestamp).fromNow()} - <span class="activity-title">${item.action}</span> - <a href="https:steemit.com/@${item.author}">${item.author}</a> - <a href="https:steemit.com/@${item.author}/${item.permlink}">${title}</a>
     </li>`
-    console.log(template)
 
     $('.bot-report ul').append(template)
   })
