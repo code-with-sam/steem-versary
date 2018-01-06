@@ -229,3 +229,22 @@ function getGlobalProps(){
     totalVestingFundSteem = result.total_vesting_fund_steem;
   })
 }
+
+/// -------- BOT REPORT
+let botVotes = "SELECT timestamp, author, permlink, weight as Votes FROM TxVotes WHERE voter = 'steemversary' ORDER BY CONVERT(DATE, timestamp) DESC "
+querySteemSql(botVotes)
+  .then(data => console.log(data))
+
+let botComments = "SELECT parent_author, parent_permlink, title, url, created FROM Comments WHERE author='steemversary' ORDER BY CONVERT(DATE, created) DESC"
+  querySteemSql(botComments)
+    .then(data => console.log(data))
+
+
+
+function querySteemSql(sqlQuery){
+  return new Promise((resolve, reject) => {
+      $.post('https://sql.steemhelpers.com/api', {
+        query : sqlQuery
+      }, (res) => resolve(res.rows));
+    });
+}
