@@ -246,7 +246,7 @@ function applyFeed(feed){
     let title = item.title ? item.title : unSlug(item.permlink)
     let template =
     `<li>
-    ${item.timestamp} - ${item.action} - ${item.author} - <a href="https:steemit.com/@${item.author}/${item.permlink}">${title}</a>
+    ${ moment(item.timestamp).fromNow()} - ${item.action} - ${item.author} - <a href="https:steemit.com/@${item.author}/${item.permlink}">${title}</a>
     </li>`
     console.log(template)
 
