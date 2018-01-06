@@ -231,14 +231,28 @@ function getGlobalProps(){
 }
 
 /// -------- BOT REPORT
-let botVotes = "SELECT timestamp, author, permlink, weight FROM TxVotes WHERE voter = 'steemversary' ORDER BY CONVERT(DATE, timestamp) DESC "
-let botComments = "SELECT parent_author, parent_permlink, title, url, created as timestamp FROM Comments WHERE author='steemversary' ORDER BY CONVERT(DATE, created) DESC"
+let botVotes = "SELECT 'vote' as 'action', timestamp, author, permlink, weight FROM TxVotes WHERE voter = 'steemversary' ORDER BY CONVERT(DATE, timestamp) DESC "
+let botComments = "SELECT 'comment' as 'action', parent_author as author, parent_permlink, root_title as title, permlink, created as timestamp FROM Comments WHERE author='steemversary' ORDER BY CONVERT(DATE, created) DESC"
 
 botFeed([querySteemSql(botVotes),querySteemSql(botComments)])
   .then(data => sortFeedByDate(data))
   .then(data => {
     console.log(data);
+    applyFeed(data);
   })
+
+function applyFeed(feed){
+  feed.forEach( (item, i, arr) => {
+    let title = item.title ? item.title : 'placeholder'
+    let template =
+    `<li>
+    ${item.timestamp} - ${item.action} - ${item.author} - <a href="https:steemit.com/@${item.author}/${item.permlink}">${title}</a>
+    </li>`
+    console.log(template)
+
+    $('.bot-report ul').append(template)
+  })
+}
 
 function botFeed(sqlQueries){
     return new Promise((resolve, reject) => {
