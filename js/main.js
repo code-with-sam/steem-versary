@@ -234,8 +234,11 @@ function getGlobalProps(){
 let botVotes = "SELECT timestamp, author, permlink, weight FROM TxVotes WHERE voter = 'steemversary' ORDER BY CONVERT(DATE, timestamp) DESC "
 let botComments = "SELECT parent_author, parent_permlink, title, url, created as timestamp FROM Comments WHERE author='steemversary' ORDER BY CONVERT(DATE, created) DESC"
 
-
-
+botFeed([querySteemSql(botVotes),querySteemSql(botComments)])
+  .then(data => sortFeedByDate(data))
+  .then(data => {
+    console.log(data);
+  })
 
 function botFeed(sqlQueries){
     return new Promise((resolve, reject) => {
@@ -252,4 +255,14 @@ function querySteemSql(sqlQuery){
         query : sqlQuery
       }, (res) => resolve(res.rows));
     });
+}
+
+function sortFeedByDate(data){
+  return new Promise((resolve, reject) => {
+      let feed = data.sort(function(a,b){
+          return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+      resolve(feed)
+  });
+
 }
