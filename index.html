@@ -8,27 +8,60 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
 </head>
   <body>
+
     <div class="jumbotron">
+      <div class="top-bar">
+        <span class="logo">🎉🍾 <a href="https://steemit.com/@steemversary">Steemversary</a></span>
+        <span class="date"></span>
+      </div>
         <div class="container">
-          <h1 class="display-3">🎉🍾 Steemversary 🎉🍾</h1>
-          <h5 class="sub-title">Reward active users on their aniversary</h5>
+          <h5 class="sub-title">We Reward active users on their Steem anniversary</h5>
+                    <h3 class="display-3"></h3>
         </div>
+        <nav>
+          <button class="btn btn-sm btn-dark user-feed-btn active">User Feed</button>
+          <button class="btn btn-sm btn-dark bot-feed-btn">Bot Feed</button>
+          <button class="btn btn-sm btn-dark delegate-modal-btn">Delegate SP to Bot</button>
+        </nav>
     </div>
 
     <main class="container">
+      <div class="bot-report  col-lg-8 offset-lg-2 col-12 col-md-12 ">
+        <h2>Bot activity</h2>
+        <ul>
+        <li class="li-title"> ------ WHEN ------- WHAT --------- WHO ----------- WHERE </li>
+        </ul>
+      </div>
+
       <div class="row grid"></div>
       <div class="load-area"></div>
       <hr class="footer-hr">
       <footer>Created by <a href="http://steemit.com/@sambillingham">Sam Billingham</a></footer>
     </main>
+    <div class="modal">
+    </div>
+
+    <div class="modal__inner">
+      <h3>Delegate to Steemversary</h3>
+      <input class="username" placeholder="yourusername" type="text"></input>
+      <p>Select an ammount below then connect with steamconnect to delegate</p>
+      <button class="btn btn-sm btn-dark delegate-steem-power-btn" data-sp="100">100SP</button>
+      <button class="btn btn-sm btn-dark delegate-steem-power-btn" data-sp="500">500SP</button>
+      <button class="btn btn-sm btn-dark delegate-steem-power-btn" data-sp="1000">1000SP</button>
+      <a href="#" target="_blank" class="btn btn btn-primary delegate-steemconnect-btn">Delegate Via Steemconnect</a>
+    </div>
 
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
     <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/js/bootstrap.bundle.min.js"></script>
+
     <script src="js/main.js"></script>
   </body>
 </html>

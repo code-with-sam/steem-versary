@@ -2,7 +2,7 @@
 
 Steem-versary is an app that shows users who's accounts were created one year ago on this day. It ranks users via latest activity (last top level post for now).
 
-live on gh pages ->
+live on gh pages -> [HERE](https://code-with-sam.github.io/steem-versary/)
 
 # dependencies
 - steemjs for intereacting with steem blockchain data on users
