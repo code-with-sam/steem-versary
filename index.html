@@ -25,7 +25,7 @@
         <nav>
           <button class="btn btn-sm btn-dark user-feed-btn active">User Feed</button>
           <button class="btn btn-sm btn-dark bot-feed-btn">Bot Feed</button>
-          <button class="btn btn-sm btn-dark bot-feed-btn">Delegate SP to Bot</button>
+          <button class="btn btn-sm btn-dark delegate-modal-btn">Delegate SP to Bot</button>
         </nav>
     </div>
 
@@ -42,11 +42,26 @@
       <hr class="footer-hr">
       <footer>Created by <a href="http://steemit.com/@sambillingham">Sam Billingham</a></footer>
     </main>
+    <div class="modal">
+    </div>
+
+    <div class="modal__inner">
+      <h3>Delegate to Steemversary</h3>
+      <input class="username" placeholder="yourusername" type="text"></input>
+      <p>Select an ammount below then connect with steamconnect to delegate</p>
+      <button class="btn btn-sm btn-dark delegate-steem-power-btn" data-sp="100">100SP</button>
+      <button class="btn btn-sm btn-dark delegate-steem-power-btn" data-sp="500">500SP</button>
+      <button class="btn btn-sm btn-dark delegate-steem-power-btn" data-sp="1000">1000SP</button>
+      <a href="#" target="_blank" class="btn btn btn-primary delegate-steemconnect-btn">Delegate Via Steemconnect</a>
+    </div>
 
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
     <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/js/bootstrap.bundle.min.js"></script>
+
     <script src="js/main.js"></script>
   </body>
 </html>
