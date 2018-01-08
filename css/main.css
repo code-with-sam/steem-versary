@@ -39,10 +39,30 @@ hr {
 }
 h1.display-3 {
   font-size: 3.5rem;
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase;
 }
 
 .sub-title {
+  margin: 0 auto;
+  max-width: 75%;
+    font-family: 'Raleway', sans-serif;
+      text-transform: uppercase;
   margin-bottom: 40px;
+  font-size: 3.2rem;
+  letter-spacing: 2px;
+
+}
+
+@media (max-width: 400px) {
+  .sub-title {
+    font-size: 1.8rem
+  }
+}
+@media (max-width: 800px) {
+  .sub-title {
+    font-size: 2rem
+  }
 }
 
 .grid h3,

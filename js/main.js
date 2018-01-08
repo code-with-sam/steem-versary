@@ -1,6 +1,6 @@
 let dateToday = new Date();
 let today = new Date(dateToday.getTime() );
-let todayFriendly = today.getFullYear()+'/'+(today.getMonth()+1)+'/'+today.getDate();
+let todayFriendly = today.getFullYear()+'/0'+(today.getMonth()+1)+'/'+today.getDate();
 
 let dateLastYear = new Date(dateToday.getTime() - (365 * 24 * 60 * 60 * 1000));
 let dateLastYearTomorrow = new Date(dateToday.getTime() + (24 * 60 * 60 * 1000) - (365 * 24 * 60 * 60 * 1000));
