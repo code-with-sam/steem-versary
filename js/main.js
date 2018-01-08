@@ -21,23 +21,25 @@ let sqlQueryTwoYears = `SELECT * FROM TxAccountCreates WHERE timestamp >= '${two
 // let sqlQuery = `SELECT * FROM TxAccountCreates WHERE timestamp >= '2017/12/25' AND timestamp < '2017/12/26' ORDER BY CONVERT(DATE, timestamp) DESC`
 
 
+// let template = `🎉🍾 Steemversary ${ todayFriendly} 🎉🍾 `;
+$('.date').text(`${todayFriendly}`);
 
-let template = `🎉🍾 Steemversary ${ todayFriendly} 🎉🍾 `;
-$('.display-3').text(template);
+// findAvailableSteemApi()
+  // .then(data => getGlobalProps(data))
 
-getGlobalProps()
+getGlobalProps(data)
 getAniversaryData()
-  .then(data => processNamesToAccounts(data), data => console.log('error', data))
-  .then(data => proccessAccountInfo(data))
-  .then(data => sortAccountsByDate(data))
-  .then(data => {
-    let inactiveCount = countInactive(data);
-    displayAccounts(data)
-    // displayBadges(data) // disable for now
-    displayInactiveMessage(inactiveCount)
-    $('.display-3').parent().append(`<h4>On this day one year ago ${data.length} people created Steem Accounts 🙌 </h4>`);
-    $('.display-3').parent().append(`<h4>${data.length - inactiveCount} of those have been active in the last 28 days 🙈</h4>`);
-  })
+    .then(data => processNamesToAccounts(data), data => console.log('error', data))
+    .then(data => proccessAccountInfo(data))
+    .then(data => sortAccountsByDate(data))
+    .then(data => {
+      let inactiveCount = countInactive(data);
+      displayAccounts(data)
+      displayBadges(data) // disable for now
+      displayInactiveMessage(inactiveCount)
+      $('.display-3').parent().append(`<h4>On this day one year ago ${data.length} people created Steem Accounts 🙌 </h4>`);
+      $('.display-3').parent().append(`<h4>${data.length - inactiveCount} of those have been active in the last 28 days 🙈</h4>`);
+    })
 
 let progressTimer;
 
@@ -281,7 +283,8 @@ function proccessAccountInfo(accounts){
   return processAllData;
 }
 
-function getGlobalProps(){
+function getGlobalProps(steemServer){
+  steem.api.setOptions({ url: 'wss://rpc.buildteam.io' });
   return steem.api.getDynamicGlobalProperties((err, result) => {
     totalVestingShares = result.total_vesting_shares;
     totalVestingFundSteem = result.total_vesting_fund_steem;
