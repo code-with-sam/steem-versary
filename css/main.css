@@ -95,9 +95,12 @@ h1.display-3 {
 }
 
 .grid-item {
-  margin: 20px 0;
+  margin: 40px 0 20px;
   /*border: solid 2px #777;*/
   text-align: center;
+}
+.grid-item li:last-of-type {
+  margin-bottom: 5px;
 }
 
 .active-false {

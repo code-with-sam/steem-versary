@@ -45,7 +45,7 @@ $(document).ready( () => {
   NProgress.configure({ parent: '.load-area' });
   NProgress.start();
   progressTimer = setInterval( () => {
-    NProgress.inc(0.25)
+    NProgress.inc(0.15)
   }, 700)
 })
 
@@ -66,43 +66,68 @@ $(document).ready( () => {
           <li>Followers: <span class="user-value">${user.followerCount}</span></li>
           <li>Following: <span class="user-value">${user.followingCount}</span></li>
           <li>Active:<span class="user-value"> <span class="badge badge-pill badge-dark">${relativeLasPostTime}</span></span></li>
-
         </div>`;
 
         clearInterval(progressTimer)
         NProgress.done(true);
         $grid.append(template);
     })
-
   }
 
-  $('.grid').on('click', '.hide-inactive', function(){
-      $('.active-false').hide()
-      $(this).hide()
-      $('.show-inactive').show()
-
-  });
+$('.grid').on('click', '.hide-inactive', function(){
+    $('.active-false').hide()
+    $(this).hide()
+    $('.show-inactive').show()
+});
 
 $('.grid').on('click', '.show-inactive', function(){
     $('.active-false').show()
     $(this).hide()
     $('.hide-inactive').show()
-
 });
+
+
+$('.delegate-modal-btn').on('click', () => {
+  $('.modal, .modal__inner').fadeIn();
+})
+
+
+$('.modal').on('click', (e) => {
+  $('.modal, .modal__inner').fadeOut();
+})
+
+$('.delegate-steem-power-btn').on('click', (e) => {
+  $('.delegate-steem-power-btn').removeClass('active')
+  $(e.currentTarget).addClass('active')
+  console.log( e.currentTarget)
+  let username = $('.username').val().trim()
+  let spPerMil = 488.19
+  let oneSpInVests = (1000000/spPerMil)
+  let vests = ($(e.currentTarget).data('sp') * oneSpInVests).toFixed(3)
+  let steemconnectUrl = `https://v2.steemconnect.com/sign/delegateVestingShares?delegator=${username}&delegatee=steemversary&vesting_shares=${vests}000%20VESTS`
+
+  $('.delegate-steemconnect-btn').attr('href', steemconnectUrl);
+})
+
+
+
 function displayBadges(data){
   let badge = calcBadges(data)
   $('.user-'+badge.mostSp.name).append(
-    '<li><span class="user-value"> <span class="badge badge-pill badge-primary">💪 Most Steem Power</span></span></li>'
+    '<span class="user-value"> <span class="badge badge-pill badge-primary" data-toggle="tooltip" data-placement="bottom" title="Most Steem Power">💪</span></span>'
   )
   $('.user-'+badge.mostPosts.name).append(
-    '<li><span class="user-value"> <span class="badge badge-pill badge-success">📝 Most Posts</span></span></li>'
+    '<span class="user-value"> <span class="badge badge-pill badge-success" data-toggle="tooltip" data-placement="bottom" title="Most Posts">📝</span></span>'
   )
   $('.user-'+badge.mostFollowers.name).append(
-    '<li><span class="user-value"> <span class="badge badge-pill badge-info">👨‍👩‍👧‍👦 Most Followers</span></span></li>'
+    '<span class="user-value"> <span class="badge badge-pill badge-info" data-toggle="tooltip" data-placement="bottom" title="Most Followers">👨‍👩‍👧‍👦</span></span>'
   )
   $('.user-'+badge.highestRep.name).append(
-    '<li><span class="user-value"> <span class="badge badge-pill badge-danger">👏 Highest Reputation</span></span></li>'
+    '<span class="user-value"> <span class="badge badge-pill badge-danger" data-toggle="tooltip" data-placement="bottom" title="Highest Reputation">👏</span></span>'
   )
+  $(function() {
+    $('[data-toggle="tooltip"]').tooltip()
+  });
 }
 
 function calcBadges(data){
@@ -307,7 +332,7 @@ function applyFeed(feed){
     let title = item.title ? item.title : unSlug(item.permlink)
     let emoji = item.action == 'comment' ? '📝' : '👍'
     console.log(title.length)
-    title = title.length > 30 ? title.substring(0,30) + '...' : title
+    title = title.length > 25 ? title.substring(0,25) + '...' : title
     console.log(title.length)
 
     let template =
