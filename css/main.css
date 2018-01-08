@@ -33,6 +33,12 @@ body {
 .logo {
   position: absolute;
   left: 20px;
+
+}
+.logo a {
+  color: #fff;
+  text-decoration: none;
+  border-bottom: dotted 1px #fff;
 }
 .date {
   position: absolute;

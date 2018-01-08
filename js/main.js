@@ -27,7 +27,7 @@ $('.date').text(`${todayFriendly}`);
 // findAvailableSteemApi()
   // .then(data => getGlobalProps(data))
 
-getGlobalProps(data)
+getGlobalProps()
 getAniversaryData()
     .then(data => processNamesToAccounts(data), data => console.log('error', data))
     .then(data => proccessAccountInfo(data))
